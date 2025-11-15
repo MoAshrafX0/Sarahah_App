@@ -9,8 +9,11 @@ const messageSchema =new mongoose.Schema({
     receiverdId:{
         type:mongoose.Schema.ObjectId,
         ref:"User"
+    },
+    isPublic:{
+        type:Boolean,
+        default:false
     }
-    
 
 },
 {

@@ -223,3 +223,62 @@ export const siginUpWithGoogle = async (req, res) => {
   });
 };
 
+// Reset Password OTP
+export const resetPasswordOTP = async (req, res) => {
+  const { email } = req.body;
+  const user = await User.findOne({ email });
+  if (!user) {
+    return res.status(404).json({ message: "User not found" });
+  }
+  const otp = uniqString();
+  user.otps.resetPassword = hashSync(otp, 10);
+  await user.save();
+  //send email to user
+  emitter.emit("sendEmail", {
+    to: user.email,
+    subject: "Reset Password",
+    contant: `<h1>Reset Password</h1>
+      <p>Dear ${user.firstName} ${user.lastName},</p>
+      <p>Thank you for signing up to Saraha. We are excited to have you on board!</p>
+      <p>Your OTP code is: <strong>${otp}</strong></p>
+      <p>Please use this code to verify your email address and complete your registration.</p>
+      <p>If you did not sign up for Saraha, please ignore this email.</p>
+      <p>Best regards,</p>
+      <p>The Saraha Team</p>
+      `,
+  });
+  res.status(200).json({ message: "OTP sent successfully" });
+};
+//confirm reset password
+export const confirmResetPassword = async (req, res) => {
+  const { email, otp } = req.body;
+  const user = await User.findOne({ email });
+  if (!user) {
+    return res.status(404).json({ message: "User not found" });
+  }
+  const isOtpMatch = compareSync(otp, user.otps.resetPassword);
+  if (!isOtpMatch) {
+    return res.status(400).json({ message: "Invalid OTP" });
+  }
+  user.isconfirmed = true;
+  await user.save();
+  res.status(200).json({ message: "Email confirmed successfully", user });
+};
+// reset password
+  const resetPassword = async (req,res) =>{
+    const {email,password}=req.body;
+    const user=await User.findOne({email});
+    if(!user){
+      return res.status(404).json({message:"User not found"})
+    }
+    user.password=hashSync(password,10);
+    user.otps.resetPassword=null;
+    await user.save();
+    res.status(200).json({message:"Password reset successfully",user})
+
+    
+  }
+
+
+
+
