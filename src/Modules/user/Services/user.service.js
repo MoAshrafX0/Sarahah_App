@@ -1,8 +1,7 @@
 import User from "../../../DB/Models/user.model.js";
 import { customAlphabet } from "nanoid";
 import Messages from "../../../DB/Models/messages.model.js";
-import { asyncDecrypt } from "../../../utils/encryption.util.js";
-import fs from "node:fs";
+import { asyncDecrypt } from "../../../Utils/encryption.util.js";
 import { deleteFileOnCloudinary, uploadFileOnCloudinary } from "../../../common/Services/cloudinary.service.js";
 import mongoose from "mongoose";
 
@@ -63,7 +62,7 @@ export const deleteAccount = async (req, res) => {
 };
 // =============================> Get all users   <====================================
 export const getAllUsers = async (req, res) => {
-  let users = await User.find().populate("Messages");
+  let users = await User.find("-password").populate("Messages");
 
   users = users.map((user) => {
     return { ...user._doc, phoneNumber: asyncDecrypt(user.phoneNumber) };

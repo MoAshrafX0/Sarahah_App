@@ -4,12 +4,12 @@ import { confirmEmail, confirmResetPassword, login, logout, refreshTokenService,
 import { authentiactionMiddleware } from "../../../Middlewares/authentication.middleware.js";
 
 import { validatorMiddleware } from "../../../Middlewares/Validator.middleware.js";
-import { siginUpSchema } from "../../../Validators/Schemas/user.schema.js";
+import { siginUpSchema, signInSchema } from "../../../Validators/Schemas/user.schema.js";
 
 //========================> auth routes <====================================
 authController.post("/add" ,validatorMiddleware(siginUpSchema),siginUp);
 authController.get("/confirm", confirmEmail);
-authController.post("/login", login);
+authController.post("/login", validatorMiddleware(signInSchema), login);
 authController.post("/refreshtoken", refreshTokenService);
 authController.post("/logout", authentiactionMiddleware, logout);
 authController.post("/auth-gmail", siginUpWithGoogle); 

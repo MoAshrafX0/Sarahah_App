@@ -1,9 +1,10 @@
 import { Router } from "express";
 const messageController = Router();
 import * as Service from "./messages.service.js";
-// messageController.use(ratelimiterMiddleware);
+import { messageSchema } from "../../Validators/Schemas/message.schema.js";
 
-messageController.post("/send/:receiverdId", Service.sendMessages);
+
+messageController.post("/send/:receiverdId", validatorMiddleware(messageSchema), Service.sendMessages);
 messageController.get("/", Service.getMessage);
 messageController.get("/private", Service.getPrivateMessage);
 messageController.get("/public", Service.getAllPublicMessage);

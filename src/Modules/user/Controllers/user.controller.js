@@ -7,15 +7,17 @@ import {
   uploadPic,
 } from "../Services/user.service.js";
 import  {authentiactionMiddleware}  from "../../../Middlewares/authentication.middleware.js"
-import { roleEnum } from "../../../common/enums/user.enum.js";
-import { cloudinaryUpload, localUpload } from "../../../Middlewares/multer.middleware.js";
+import { cloudinaryUpload } from "../../../Middlewares/multer.middleware.js";
+import { updatePasswordSchema, updateProfileSchema } from "../../../Validators/Schemas/user.schema.js";
 //========================>  user routes <====================================
 
-userController.put("/update", authentiactionMiddleware, updateAccount);
+userController.put("/update", validatorMiddleware(updateProfileSchema), authentiactionMiddleware, updateAccount);
 
 userController.delete("/delete", authentiactionMiddleware, deleteAccount);
 
 userController.post("/upload-pic", authentiactionMiddleware,cloudinaryUpload({}).single("profile"), uploadPic);
+
+userController.put("/update-password", validatorMiddleware(updatePasswordSchema), authentiactionMiddleware, updatePassword);
 
 //========================> admin routes <====================================
 

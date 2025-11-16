@@ -1,5 +1,5 @@
 import User from "../../../DB/Models/user.model.js";
-import { asyncDecrypt, asyncEncrypt } from "../../../utils/encryption.util.js";
+import { asyncDecrypt, asyncEncrypt } from "../../../Utils/encryption.util.js";
 import { compareSync, hashSync } from "bcrypt";
 import { customAlphabet } from "nanoid";
 import { emitter } from "../../../Utils/sendemail.util.js";
@@ -56,7 +56,7 @@ export const siginUp = async (req, res) => {
       <p>The Saraha Team</p>
       `,
   });
-  res.status(201).json({ message: "User created successfully", user });
+  res.status(201).json({ message: "User created successfully",...user.toObject(),password:undefined });
 };
 //login user
 export const login = async (req, res) => {
@@ -279,6 +279,21 @@ export const confirmResetPassword = async (req, res) => {
     
   }
 
+  // update password
+  export const updatePassword = async (req,res) =>{
+    const {user:{_id}}=req.loggedInUser;
+    const {password}=req.body;
+    const user=await User.findById({_id});
+    if(!user){
+      return res.status(404).json({message:"User not found"})
+    }
+    user.password=hashSync(password,10);
+    
+    await user.save();
+    res.status(200).json({message:"Password updated successfully",...user.toObject(),password:undefined})
+r
+    
+  }
 
 
 
